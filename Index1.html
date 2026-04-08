@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lead Manager</title>
+</head>
+<body>
+
+<h2>Lead Management App</h2>
+
+<input type="text" id="name" placeholder="Enter Name">
+<input type="email" id="email" placeholder="Enter Email">
+<button onclick="saveData()">Submit</button>
+
+<br><br>
+
+<ul id="list"></ul>
+
+<button onclick="clearAll()">Clear All</button>
+
+<script>
+
+// 🔷 Load data from localStorage
+let leads = JSON.parse(localStorage.getItem("leads")) || [];
+
+// 🔷 Save Data
+function saveData() {
+    let name = document.getElementById("name").value;
+    let email = document.getElementById("email").value;
+
+    if (name === "" || email === "") {
+        alert("Please enter all fields");
+        return;
+    }
+
+    leads.push({ name, email });
+    localStorage.setItem("leads", JSON.stringify(leads));
+
+    document.getElementById("name").value = "";
+    document.getElementById("email").value = "";
+
+    displayLeads();
+}
+
+// 🔷 Display Data
+function displayLeads() {
+    let list = document.getElementById("list");
+    list.innerHTML = "";
+
+    leads.forEach((lead, index) => {
+        let li = document.createElement("li");
+        li.innerHTML = `
+            ${lead.name} - ${lead.email}
+            <button onclick="editLead(${index})">Edit</button>
+            <button onclick="deleteLead(${index})">Delete</button>
+        `;
+        list.appendChild(li);
+    });
+}
+
+// 🔷 Delete One
+function deleteLead(index) {
+    leads.splice(index, 1);
+    localStorage.setItem("leads", JSON.stringify(leads));
+    displayLeads();
+}
+
+// 🔷 Edit
+function editLead(index) {
+    let newName = prompt("Enter new name:", leads[index].name);
+    let newEmail = prompt("Enter new email:", leads[index].email);
+
+    if (newName && newEmail) {
+        leads[index].name = newName;
+        leads[index].email = newEmail;
+
+        localStorage.setItem("leads", JSON.stringify(leads));
+        displayLeads();
+    }
+}
+
+// 🔷 Clear All
+function clearAll() {
+    if (confirm("Are you sure you want to delete all data?")) {
+        leads = [];
+        localStorage.removeItem("leads");
+        displayLeads();
+    }
+}
+
+// 🔷 Show data on load
+displayLeads();
+
+</script>
+
+</body>
+</html>
